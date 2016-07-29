@@ -1,0 +1,60 @@
+#!/bin/sh
+
+con(){
+
+if [ ! -d $1 ]
+then
+    dev=${1##*/}
+    sed -i "s:/dev/.*$:/dev/$dev:g"   ~/.kermrc
+fi
+
+if [ ! -d $2 ]
+then
+    sed -i "s:kermit-.*:kermit-$dev-$2:g"   ~/.kermrc
+else
+    if [ ! -d $dev ]
+	then
+	    sed -i "s:kermit-.*:kermit-$dev:g" ~/.kermrc
+    fi
+fi
+
+kermit
+
+}
+
+setup() {
+
+cat > ~/.kermrc <<EOF
+set line /dev/ttyS0
+set speed 115200
+set carrier-watch off
+set handshake none
+set flow-control none
+robust
+set file type bin
+set file name lit
+set rec pack 1000
+set send pack 1000
+set window 5
+log session kermit-log
+set transmit linefeed on
+c
+EOF
+
+}
+
+usage() {
+	echo ker dev logfile
+}
+
+case $1 in
+	setup)
+		setup
+		;;
+	-h)
+		usage
+		;;
+	*)
+		con $@
+		;;
+esac

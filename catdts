@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+import os
+import sys
+import re
+
+#file = "arch/powerpc/boot/dts/p1020rdb-pd_32b.dts"
+
+
+def print_dts(file):
+    fp = open(file, "r")
+    path = os.path.split(file)[0]
+    for line in fp.readlines():
+        if re.match(r"/include/ (.+)", line):
+            file = os.path.join(path, re.match(r"/include/ (.+)", line).group(0).split(" ")[1].replace("\"",""))
+            inc(file)
+        else:
+            sys.stdout.write(line)
+    fp.close()
+
+def inc(file):
+    print_dts(file)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print "catdts dts_file"
+        sys.exit(1)
+    print_dts(sys.argv[-1])
